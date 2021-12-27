@@ -98,11 +98,6 @@ django_heroku.settings(locals())
 DATABASES = {
     'default': {
         'ENGINE':'django.db.backends.postgresql_psycopg2',
-        'NAME': env('NAME'),
-        'USER': env('USER'),
-        'PASSWORD': env('PASSWORD'),
-        'PORT': env('PORT'),
-        'HOST': env('HOST')
     }
 }
 import dj_database_url
