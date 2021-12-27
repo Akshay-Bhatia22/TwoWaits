@@ -107,10 +107,10 @@ class LoginAccount(APIView):
         # check_pswd returns True for match
 
 
-class OtpVerify(APIView):
+class SendOTP(APIView):
     permission_classes = (AllowAny,)
 
-    def get(self, request):
+    def post(self, request):
         try:
             send_otp(request.data.get('email',))
             message = {'message':'OTP sent'}
@@ -118,6 +118,10 @@ class OtpVerify(APIView):
         except:
             message = {'message':'OTP could not be sent'}
             return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+
+class OtpVerify(APIView):
+    permission_classes = (AllowAny,)
 
     def post(self, request):
         email = request.data.get("email",)
@@ -158,23 +162,24 @@ class ForgotResetPassword(APIView):
         new_password = request.data.get("new_password")
         try:
             user = UserAccount.objects.get(email__iexact = email)
-            print(user.password)
-            print(new_password)
-
-            if check_password(new_password, user.password):
-                message = {'message':'Password cannot be same as old one'}
-                return Response(message, status=status.HTTP_406_NOT_ACCEPTABLE)
+            if user.is_verified:
+                if check_password(new_password, user.password):
+                    message = {'message':'Password cannot be same as old one'}
+                    return Response(message, status=status.HTTP_406_NOT_ACCEPTABLE)
+                else:
+                    try:
+                        validate_password(new_password)
+                    except:
+                        message = 'Please Enter a valid password. Password should have atleast 1 Capital Letter, 1 Number and 1 Special Character in it. Also it should not contain 123'
+                        return Response({'message': message},status=status.HTTP_400_BAD_REQUEST)
+                    
+                    user.password = make_password(new_password)
+                    user.save()
+                    message = {'message':'Password Changed Successfully'}
+                    return Response(message, status=status.HTTP_202_ACCEPTED)
             else:
-                try:
-                    validate_password(new_password)
-                except:
-                    message = 'Please Enter a valid password. Password should have atleast 1 Capital Letter, 1 Number and 1 Special Character in it. Also it should not contain 123'
-                    return Response({'message': message},status=status.HTTP_400_BAD_REQUEST)
-                
-                user.password = make_password(new_password)
-                user.save()
-                message = {'message':'Password Changed Successfully'}
-                return Response(message, status=status.HTTP_202_ACCEPTED)
+                message = {'message':'User not verified'}
+                return Response(message, status=status.HTTP_403_FORBIDDEN) 
         except:
             message = {'message':'User not found'}
             return Response(message, status=status.HTTP_401_UNAUTHORIZED)
