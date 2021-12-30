@@ -6,46 +6,46 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 
 # ---------Models--------
 from Faculty.models import Faculty
-import Profile
+from Student.models import Student
+
 
 # ---------Serializers--------
-from .serializers import FacultyProfileSerializer
-from Profile import serializers
+from .serializers import FacultyProfileSerializer, StudentProfileSerializer
 
 
-def user_url(request):
-    if 'student' in request.get_full_path():
-        return 'S'
-    if 'faculty' in request.get_full_path():
-        return 'F'
+class UserTypeHelper:
 
+    def __init__(self, request):
+        self.request = request
+        if 'student' in self.request.get_full_path():
+            self.user_type = 'S'
 
-def get_specific_user_by_id(request, user_type):
-    if user_type == 'F':
-        return Faculty.objects.get(faculty_account_id=request.user.id)
-    if user_type == 'S':
-        pass
+        if 'faculty' in request.get_full_path():
+            self.user_type = 'F'
 
+    def get_specific_user_by_id(self):
+        if self.user_type == 'F':
+            return Faculty.objects.get(faculty_account_id=self.request.user.id)
+        if self.user_type == 'S':
+            return Student.objects.get(student_account_id=self.request.user.id)
 
-def user_serializer(data, user_type):
-    if user_type == 'F':
-        return FacultyProfileSerializer(data, many=False)
-    if user_type == 'S':
-        pass
+    def user_serializer(self, data):
+        if self.user_type == 'F':
+            return FacultyProfileSerializer(data, many=False)
+        if self.user_type == 'S':
+            return StudentProfileSerializer(data, many=False)
 
+    def get_user_account_id(self):
+        if self.user_type == 'F':
+            return 'faculty_account_id'
+        if self.user_type == 'S':
+            return 'student_account_id'
 
-def get_user_account_id(user_type):
-    if user_type == 'F':
-        return 'faculty_account_id'
-    if user_type == 'S':
-        pass
-
-def user_type_exists(request, user_type):
-    if user_type == 'F':
-        return Faculty.objects.filter(faculty_account_id=request.user.id).exists()
-    if user_type == 'S':
-        pass
-# FACULTY
+    def user_type_exists(self):
+        if self.user_type == 'F':
+            return Faculty.objects.filter(faculty_account_id=self.request.user.id).exists()
+        if self.user_type == 'S':
+            return Student.objects.filter(student_account_id=self.request.user.id).exists()
 
 
 class ProfileView(APIView):
@@ -53,48 +53,46 @@ class ProfileView(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def get(self, request, format=None):
-        user_type = user_url(request)
+        helper = UserTypeHelper(request)
         try:
-            data = get_specific_user_by_id(request, user_type)
-            # data = Faculty.objects.get(faculty_account_id=request.user.id)
-            serializer = user_serializer(data, user_type)
-            # serializer = FacultyProfileSerializer(data, many=False)
+            data = helper.get_specific_user_by_id()
+            serializer = helper.user_serializer(data)
             return Response(serializer.data)
         except:
             return Response({'message': 'User not found'}, status=status.HTTP_401_UNAUTHORIZED)
 
     def post(self, request, format=None):
+        helper = UserTypeHelper(request)
         data = request.data
-        user_type = user_url(request)
-        data[get_user_account_id(user_type)] = request.user.id
-        # if Faculty.objects.filter(faculty_account_id=request.user.id).exists():
-        if user_type_exists(request, user_type):
+        data[helper.get_user_account_id()] = request.user.id
+        if helper.user_type_exists():
             return Response(data={'message': 'Profile already exists use PUT instead'}, status=status.HTTP_400_BAD_REQUEST)
-        if user_type == 'F':
+        if helper.user_type == 'F':
             serializer = FacultyProfileSerializer(data=data)
-        if user_type == 'S':
-            pass
-        
-        # serializer = user_serializer(data, user_type)
+        if helper.user_type == 'S':
+            serializer = StudentProfileSerializer(data=data)
+
+
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(data={'message': 'Invalid data entered'}, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, format=None):
+        helper = UserTypeHelper(request)
         data = request.data
-        user_type = user_url(request)
 
-        data[get_user_account_id(user_type)] = request.user.id
+        data[helper.get_user_account_id()] = request.user.id
         try:
-            profile = get_specific_user_by_id(request, user_type)
+            print(helper.get_specific_user_by_id())
+            profile = helper.get_specific_user_by_id()
         except:
             return Response({'message': 'Profile not found'}, status=status.HTTP_403_FORBIDDEN)
-        if user_type == 'F':
+        if helper.user_type == 'F':
             serializer = FacultyProfileSerializer(instance=profile, data=data)
-        if user_type == 'S':
-            pass
-        # serializer = FacultyProfileSerializer(instance=profile, data=data)
+        if helper.user_type == 'S':
+            serializer = StudentProfileSerializer(instance=profile, data=data)
+
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
