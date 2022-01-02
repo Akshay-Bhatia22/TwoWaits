@@ -13,8 +13,18 @@ class UserTypeHelper:
         if 'student' in self.request.get_full_path():
             self.user_type = 'S'
 
-        if 'faculty' in request.get_full_path():
+        elif 'faculty' in request.get_full_path():
             self.user_type = 'F'
+
+        else:
+            if hasattr(self.request.user, 'student'):
+                print("STUDENT via get or put")
+                self.user_type = 'S'
+            elif hasattr(self.request.user, 'faculty'):
+                self.user_type = 'F'
+                print("FACULTY via get or put")
+
+
 
     def get_specific_user_by_id(self):
         if self.user_type == 'F':
