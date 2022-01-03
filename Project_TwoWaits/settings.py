@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     # Django apps
     'Accounts',
     'Faculty',
+    'Student',
+    'Forum',
 
     # Dependencies
     'rest_framework',
@@ -95,6 +97,7 @@ WSGI_APPLICATION = 'Project_TwoWaits.wsgi.application'
 # Activate Django-Heroku.
 django_heroku.settings(locals())
 
+# # FOR PRODUCTION
 DATABASES = {
     'default': {
         'ENGINE':'django.db.backends.postgresql_psycopg2',
@@ -104,6 +107,26 @@ import dj_database_url
 db_from_env = dj_database_url.config(conn_max_age=600)
 DATABASES['default'].update(db_from_env)
 
+# FOR LOCAL DEVELOPMENT AND TESTING
+# ON SQLITE
+# DATABASES = {
+#     'default': {
+#         'ENGINE':'django.db.backends.sqlite3',
+#         'NAME':'db.sqlite3',
+#     }
+# }
+
+# ON AWS
+# DATABASES = {
+#     'default': {
+#         'ENGINE': env('ENGINE'),
+#         'NAME': env('NAME'),
+#         'USER': env('USER'),
+#         'PASSWORD': env('PASSWORD'),
+#         'PORT': env('PORT'),
+#         'HOST': env('HOST')
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -150,6 +173,14 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': env('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': env('CLOUDINARY_API_KEY'),
+    'API_SECRET': env('CLOUDINARY_API_SECRET'),
+}
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
 
 STATIC_URL = '/static/'
 
