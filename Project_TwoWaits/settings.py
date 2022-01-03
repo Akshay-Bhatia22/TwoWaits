@@ -98,23 +98,23 @@ WSGI_APPLICATION = 'Project_TwoWaits.wsgi.application'
 django_heroku.settings(locals())
 
 # # FOR PRODUCTION
-DATABASES = {
-    'default': {
-        'ENGINE':'django.db.backends.postgresql_psycopg2',
-    }
-}
-import dj_database_url
-db_from_env = dj_database_url.config(conn_max_age=600)
-DATABASES['default'].update(db_from_env)
+# DATABASES = {
+#     'default': {
+#         'ENGINE':'django.db.backends.postgresql_psycopg2',
+#     }
+# }
+# import dj_database_url
+# db_from_env = dj_database_url.config(conn_max_age=600)
+# DATABASES['default'].update(db_from_env)
 
 # FOR LOCAL DEVELOPMENT AND TESTING
 # ON SQLITE
-# DATABASES = {
-#     'default': {
-#         'ENGINE':'django.db.backends.sqlite3',
-#         'NAME':'db.sqlite3',
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE':'django.db.backends.sqlite3',
+        'NAME':'db.sqlite3',
+    }
+}
 
 # ON AWS
 # DATABASES = {
