@@ -30,7 +30,7 @@ class AuthorSerializer(ModelSerializer):
 
 class CommentSerializer(ModelSerializer):
     author_id = AuthorSerializer()
-    
+
     class Meta:
         model = Comment
         fields = ['comment_id', 'author_id', 'comment', 'commented']
@@ -42,7 +42,14 @@ class AnswerSerializer(ModelSerializer):
 
     class Meta:
         model = Answer
-        fields = ['answer_id', 'author_id', 'answer', 'likes', 'answered', 'comment']
+        fields = ['answer_id', 'author_id', 'answer', 'answered', 'comment']
+
+    def to_representation(self, instance):
+        data = super(AnswerSerializer, self).to_representation(instance)
+        data['likes'] = LikeAnswer.objects.filter(
+            answer_id=data['answer_id']).filter(likes=1).count()
+
+        return data
 
 
 class QuestionSerializer(ModelSerializer):
@@ -54,23 +61,21 @@ class QuestionSerializer(ModelSerializer):
         fields = ['question_id', 'author_id', 'question', 'raised', 'answer', ]
 
 # Exculdes nested serializers
+
+
 class QuestionGenericSerializer(ModelSerializer):
     class Meta:
         model = Question
         fields = '__all__'
+
 
 class AnswerGenericSerializer(ModelSerializer):
     class Meta:
         model = Answer
         fields = '__all__'
 
+
 class CommentGenericSerializer(ModelSerializer):
     class Meta:
         model = Comment
         fields = '__all__'
-
-class LikeAnswerSerializer(ModelSerializer):
-    class Meta:
-        model = LikeAnswer
-        fields = '__all__'
-        

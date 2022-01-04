@@ -8,3 +8,5 @@ db.sqlite3
 
 # Testing files
 *.testing
+
+twowaits.pem

@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 # ---------Serializers--------
-from .serializers import LikeAnswerSerializer, QuestionSerializer, QuestionGenericSerializer, AnswerGenericSerializer, CommentGenericSerializer
+from .serializers import QuestionSerializer, QuestionGenericSerializer, AnswerGenericSerializer, CommentGenericSerializer
 
 from Profile.UserHelpers import UserTypeHelper
 from .models import Answer, Comment, LikeAnswer, Question
@@ -144,9 +144,8 @@ class LikeUnlikeAnswer(APIView):
                     data['likes'] = 1                
 
                 serializer = LikeAnswerSerializer(instance=obj, data=data)
-                if serializer.is_valid():
-                    serializer.save()
-                    return Response(serializer.data)
+                return check_save_serializer(serializer)
+
             else:
                 data['likes'] = 1
                 serializer = LikeAnswerSerializer(data=data)
