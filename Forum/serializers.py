@@ -4,7 +4,7 @@ from Faculty.models import Faculty
 from Student.models import Student
 from Accounts.models import UserAccount
 
-from .models import Question, Answer, Comment
+from .models import LikeAnswer, Question, Answer, Comment
 
 
 class StudentAuthorSerializer(ModelSerializer):
@@ -52,3 +52,25 @@ class QuestionSerializer(ModelSerializer):
     class Meta:
         model = Question
         fields = ['question_id', 'author_id', 'question', 'raised', 'answer', ]
+
+# Exculdes nested serializers
+class QuestionGenericSerializer(ModelSerializer):
+    class Meta:
+        model = Question
+        fields = '__all__'
+
+class AnswerGenericSerializer(ModelSerializer):
+    class Meta:
+        model = Answer
+        fields = '__all__'
+
+class CommentGenericSerializer(ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = '__all__'
+
+class LikeAnswerSerializer(ModelSerializer):
+    class Meta:
+        model = LikeAnswer
+        fields = '__all__'
+        

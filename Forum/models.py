@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models.fields import IntegerField
+from django.db.models.fields.related import ForeignKey
 from django.utils import timezone
 
 from Accounts.models import UserAccount
@@ -30,7 +32,6 @@ class Answer(models.Model):
         UserAccount, on_delete=models.CASCADE, related_name='answer_author')
     answer = models.CharField(max_length=150)
     answered = models.DateTimeField(default=timezone.now)
-    likes = models.IntegerField(default=0)
 
     def __str__(self):
         return self.answer
@@ -39,8 +40,8 @@ class Answer(models.Model):
     def answer_id(self):
         return self.id
 
-    class Meta:
-        ordering = ['-likes']
+    # class Meta:
+    #     ordering = ['-likes']
 
 
 class Comment(models.Model):
@@ -60,3 +61,9 @@ class Comment(models.Model):
 
     class Meta:
         ordering = ['-commented']
+
+class LikeAnswer(models.Model):
+    answer_id = models.ForeignKey(Answer, on_delete=models.CASCADE, related_name='like')
+    author_id = models.ForeignKey(
+        UserAccount, on_delete=models.CASCADE, related_name='like_author')
+    likes = models.IntegerField(default=0)
