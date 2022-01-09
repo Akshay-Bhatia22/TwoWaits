@@ -9,4 +9,7 @@ db.sqlite3
 # Testing files
 *.testing
 
+# Aws ec2 public private keys
 twowaits.pem
+# virtualenv at ec2 instance
+myprojectenv

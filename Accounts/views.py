@@ -22,34 +22,35 @@ from django.core.mail import EmailMultiAlternatives
 from django.utils import timezone
 from datetime import timedelta
 
-# ------OTP-------
+from .tasks import send_otp
+# # ------OTP-------
 otp_expire_duration = 2
 
 
-# -------CHANGE TO CLASS BASED--------
-# ------ For Sending OTP to passed E-Mail -------
-def send_otp(email):
-    # generating 4-digit OTP
-    otp = randint(1000,9999)
-    # getting account
-    user = UserAccount.objects.get(email=email)
-    try:
-        OTP.objects.create(otp_account_id=user, otp=otp)
+# # -------CHANGE TO CLASS BASED--------
+# # ------ For Sending OTP to passed E-Mail -------
+# def send_otp(email):
+#     # generating 4-digit OTP
+#     otp = randint(1000,9999)
+#     # getting account
+#     user = UserAccount.objects.get(email=email)
+#     try:
+#         OTP.objects.create(otp_account_id=user, otp=otp)
 
-    except:
-        new_otp = OTP.objects.get(otp_account_id=user)
-        new_otp.otp = otp
-        new_otp.created = timezone.now()
-        new_otp.save()
+#     except:
+#         new_otp = OTP.objects.get(otp_account_id=user)
+#         new_otp.otp = otp
+#         new_otp.created = timezone.now()
+#         new_otp.save()
         
-    from_email, to = EMAIL_HOST_USER, email
-    subject = "OTP for TwoWaits Sign-Up"
-    text_content = f'Your One Time Password for signing up on V-Shop is {otp}.\nValid for only 2 minutes.\nDO NOT SHARE IT WITH ANYBODY.'
-    html_content = f'<span style="font-family: Arial, Helvetica, sans-serif; font-size: 16px;"><p style="font-size: 18px;">DO NOT SHARE IT WITH ANYBODY.</p><p>Valid for only {otp_expire_duration} minutes.</p><p>Your One Time Password for signing up on Two Waits is <strong style="font-size: 18px;">{otp}</strong>.</p></span>'
-    msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
-    msg.attach_alternative(html_content, "text/html")
-    msg.send()
-#------------------------------------------------
+#     from_email, to = EMAIL_HOST_USER, email
+#     subject = "OTP for TwoWaits Sign-Up"
+#     text_content = f'Your One Time Password for signing up on V-Shop is {otp}.\nValid for only 2 minutes.\nDO NOT SHARE IT WITH ANYBODY.'
+#     html_content = f'<span style="font-family: Arial, Helvetica, sans-serif; font-size: 16px;"><p style="font-size: 18px;">DO NOT SHARE IT WITH ANYBODY.</p><p>Valid for only {otp_expire_duration} minutes.</p><p>Your One Time Password for signing up on Two Waits is <strong style="font-size: 18px;">{otp}</strong>.</p></span>'
+#     msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+#     msg.attach_alternative(html_content, "text/html")
+#     msg.send()
+# #------------------------------------------------
 
 class NewAccount(APIView):
     permission_classes = (AllowAny,)
@@ -112,7 +113,7 @@ class SendOTP(APIView):
 
     def post(self, request):
         try:
-            send_otp(request.data.get('email',))
+            send_otp.delay(request.data.get('email',))
             message = {'message':'OTP sent'}
             return Response(message, status=status.HTTP_200_OK)
         except:

@@ -51,12 +51,16 @@ INSTALLED_APPS = [
     'Accounts',
     'Faculty',
     'Student',
+    'Profile',
     'Forum',
 
     # Dependencies
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
+
+    # celery
+    'django_celery_results',
 ]
 
 MIDDLEWARE = [
@@ -75,7 +79,7 @@ ROOT_URLCONF = 'Project_TwoWaits.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'Templates'), os.path.join(BASE_DIR, 'Templates', 'email_templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -245,3 +249,12 @@ SIMPLE_JWT = {
 }
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+# CELERY STUFF
+CELERY_BROKER_URL = 'redis://localhost:6379'
+# CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Kolkata'

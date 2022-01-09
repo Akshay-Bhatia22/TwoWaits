@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap');
+        * {
+            font-family: 'Source Sans Pro', sans-serif;
+            margin: 0;
+            padding: 0;
+            color : rgb(68, 68, 68);
+
+        }
+      
+        .banner *{background-color: #A17867;  
+            margin:0;  
+            padding: 0.5em;
+            color: white;
+            text-align: center;
+        }
+        .content *{
+            margin:0.2em;
+            padding: 0.7em;
+            text-decoration: none;
+
+        }
+        a {
+            text-decoration: none;
+
+        }
+        #highlight {
+            background-color: rgb(226, 226, 226);
+            padding: 0.05em 0.1em 0.05em 0.1em;
+            border-radius: 2em;
+
+        }
+        #footer {
+            font-family: 'Caveat', cursive;
+
+        }
+    </style>
+</head>
+
+    <body>
+        <div class='banner'><h1>TWO WAITS</h1></div>
+        <div class='content'>
+            <h2>Dear {{user}}</h2>
+            <h3>Your one time password is <span id='highlight'>{{otp}}</span>
+            for registering yourself with TwoWaits app.
+            <br>Valid for only {{otp_expire_duration}} minutes.</h3>
+            <p>Do not share it with anybody.</p>
+            <h3 id='footer'>Regards<br>Team TwoWaits</h3>
+
+        </div>
+        <div class='banner'>
+            <p>Contact us : <a href="mailto:two2waits@gmail.com">two2waits@gmail.com</a></p>
+        </div>
+    </body>
+</html>
