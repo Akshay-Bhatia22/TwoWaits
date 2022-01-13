@@ -51,7 +51,7 @@ class QuizQuestionSerializer(ModelSerializer):
         model = QuizQuestion
         fields = ['quiz_question_id', 'question_text', 'option', 'correct']
 
-    
+# FOR FULL QUIZ VIEW  
 class QuizFacultySerializer(ModelSerializer):
     question = QuizQuestionSerializer(many=True)
     author_id = AuthorSerializer()
@@ -59,3 +59,11 @@ class QuizFacultySerializer(ModelSerializer):
     class Meta:
         model = Quiz
         fields = ['quiz_id', 'author_id', 'title', 'description', 'no_of_question', 'time_limit', 'question']
+
+
+
+class QuizFacultyCreateSerializer(ModelSerializer):
+
+    class Meta:
+        model = Quiz
+        fields = ['quiz_id', 'author_id', 'title', 'description', 'no_of_question', 'time_limit']

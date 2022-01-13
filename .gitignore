@@ -13,3 +13,5 @@ db.sqlite3
 twowaits.pem
 # virtualenv at ec2 instance
 myprojectenv
+
+.DS_Store

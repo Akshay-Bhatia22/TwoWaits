@@ -4,6 +4,17 @@ from . import views
 
 # CUD Create Update Delete
 urlpatterns = [
-    path('', views.QuizView.as_view()),
+    # FOR create
+    path('', views.QuizMain.as_view()),
+    # For Update/delete
+    path('<int:pk>/', views.QuizMain.as_view()),
+
+    path('question/', views.QuizQuestionCreate.as_view()),
+
+    path('question/correct/', views.QuizCorrectOption.as_view()),
+
+
+
+    path('testing/', views.QuizView.as_view()),
 
 ]
