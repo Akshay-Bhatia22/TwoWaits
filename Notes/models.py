@@ -38,3 +38,12 @@ class File(models.Model):
     @property
     def file_id(self):
         return self.id
+
+class BookmarkNotes(models.Model):
+    user_id = models.ForeignKey(
+        UserAccount, on_delete=models.CASCADE, related_name='user_note')
+    note_id = models.ForeignKey(
+        Note, on_delete=models.CASCADE, related_name='bookmark_note_id')
+    
+    def __str__(self):
+        return self.note_id

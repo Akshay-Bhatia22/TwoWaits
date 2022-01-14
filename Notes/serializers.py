@@ -4,7 +4,7 @@ from Faculty.models import Faculty
 from Student.models import Student
 from Accounts.models import UserAccount
 
-from .models import Note, File
+from .models import BookmarkNotes, Note, File
 class FileSerializer(ModelSerializer):
     class Meta:
         model = File
@@ -34,4 +34,9 @@ class NoteSerializer(ModelSerializer):
 class NoteCreateSerializer(ModelSerializer):
     class Meta:
         model = Note
+        fields = '__all__'
+
+class BookmarkNotesSerializer(ModelSerializer):
+    class Meta:
+        model = BookmarkNotes
         fields = '__all__'

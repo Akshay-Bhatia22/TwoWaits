@@ -5,8 +5,8 @@ from rest_framework import generics, mixins
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.serializers import Serializer
-from .models import File, Note
-from .serializers import NoteCreateSerializer, NoteSerializer
+from .models import BookmarkNotes, File, Note
+from .serializers import BookmarkNotesSerializer, NoteCreateSerializer, NoteSerializer
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -76,3 +76,37 @@ class FileAdd(APIView):
                 return Response({'message':'ok'}, status=status.HTTP_201_CREATED)
         except:
             return Response({'message':'Invalid data entered'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+
+# class BookmarkNotesAdd(generics.CreateAPIView, generics.GenericAPIView):
+#     serializer_class = BookmarkNotesSerializer
+
+#     def post(self, request, *args, **kwargs):
+#         override_request(request)
+#         return self.create(request, *args, **kwargs)
+
+
+class BookmarkNotesAdd(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, format=None):
+        data = request.data
+        # override_request
+        data['user_id'] = request.user.id
+        try:
+            try:
+                # note already bookmarked
+                existing_note = BookmarkNotes.objects.filter(user_id=data['user_id']).filter(note_id=data['note_id']).first()
+                # unbookmark existing note
+                existing_note.delete()
+                return Response({'message':'Unbookmarked'}, status=status.HTTP_200_OK)
+            except:
+                # note doesn't exist
+                serializer = BookmarkNotesSerializer(data=data)
+                if serializer.is_valid():
+                    serializer.save()
+                message = {'message':'Bookmarked'}
+                message.update(serializer.data)
+                return Response(message,status=status.HTTP_201_CREATED)
+        except:
+            return Response({'message':'Invalid data entered; Either user or note doesn\'t exist'}, status=status.HTTP_406_NOT_ACCEPTABLE)

@@ -11,5 +11,7 @@ urlpatterns = [
     path('view/', views.NoteViewset.as_view()),
 
     path('file/', views.FileAdd.as_view()),
+
+    path('bookmark/', views.BookmarkNotesAdd.as_view()),
     
 ]
