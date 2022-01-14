@@ -24,5 +24,7 @@ urlpatterns = [
     path('profile/', include('Profile.urls')),
     path('forum/', include('Forum.urls')),
     path('quiz/', include('Quiz.urls')),
+    path('notes/', include('Notes.urls')),
+
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
