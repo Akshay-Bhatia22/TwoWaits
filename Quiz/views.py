@@ -84,7 +84,18 @@ class QuizCorrectOption(APIView):
         except:
             return Response({'message':'Invalid data entered'}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
+class CreatedQuizView(APIView):
+    def get(self, request, format=None):
+        data=request.data
+        quiz = Quiz.objects.get(id=data['quiz_id'])
+        serializer = QuizFacultySerializer(instance=quiz)
+        return Response(serializer.data)
 
+class MyCreatedQuizzes(APIView):
+    def get(self, request, format=None):
+        quiz = Quiz.objects.filter(author_id=self.request.user.id)
+        serializer = QuizFacultySerializer(instance=quiz, many=True)
+        return Response(serializer.data)
 
 # class QuizCreate(APIView):
 
