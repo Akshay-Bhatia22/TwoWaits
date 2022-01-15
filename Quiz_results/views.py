@@ -4,8 +4,9 @@ from rest_framework import filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from Quiz.models import Option, QuizQuestion
 
-from Quiz_results.models import QuizResult
+from Quiz_results.models import QuizResult, StudentAnswer, StudentResponse
 
 # ---------Serializers--------
 from .serializers import QuizResultSerializer
@@ -15,7 +16,7 @@ from Profile.UserHelpers import UserTypeHelper
 from django.db.models import Prefetch
 
 
-class AttemptQuiz(generics.CreateAPIView, generics.GenericAPIView):
+class AttemptQuiz(generics.CreateAPIView):
 
     serializer_class = QuizResultSerializer
     permission_classes = [IsAuthenticated]
@@ -29,3 +30,47 @@ class AttemptQuiz(generics.CreateAPIView, generics.GenericAPIView):
             return Response({'message':'Quiz already attempted'}, status=status.HTTP_208_ALREADY_REPORTED)
         data['student_id'] = request.user.id
         return self.create(request, *args, **kwargs)
+
+class AnswerQuizQuestion(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, format=None):
+        data = request.data
+        try:
+            # getting instance for foreign relationships
+            quiz_result_id = QuizResult.objects.get(id=data['quiz_result_id'])
+            question_id = QuizQuestion.objects.get(id=data['question_id'])
+            
+            # checking if already answered
+            student_answer_instance = StudentAnswer.objects.filter(quiz_result_id=quiz_result_id).filter(question_id=question_id).first()
+            
+            if not student_answer_instance:
+                # create new answer instance
+                student_answer_instance = StudentAnswer.objects.create(quiz_result_id=quiz_result_id, question_id=question_id)
+
+        except:
+            return Response({'message':'Invalid data entered. Either quiz or question doesn\'t exist'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        
+
+        # ------------------------------FOR SINGLE CORRECT OPTIONS-----------------------------------------------------
+        for option in data['options']:
+
+            # getting option isntance for foreign relationship
+            try:
+                option_id = Option.objects.get(id=option['option_id'])
+            except:
+                return Response({'message':'Invalid option_id entered'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+            obj = StudentResponse.objects.filter(answer_id=student_answer_instance).filter(option_id=option_id)
+            
+            if obj:
+                # updating existing response
+                obj.update(answer_id=student_answer_instance, option_id=option_id)
+                return Response({'message':'Response updated'}, status=status.HTTP_200_OK)
+
+            # if new response made
+            StudentResponse.objects.create(answer_id=student_answer_instance, option_id=option_id)
+            return Response({'message':'New response registered'}, status=status.HTTP_201_CREATED)
+

@@ -25,7 +25,7 @@ class StudentAnswer(models.Model):
     def student_answer_id(self):
         return self.id
 
-class Response(models.Model):
+class StudentResponse(models.Model):
     answer_id = models.ForeignKey(StudentAnswer, on_delete=models.CASCADE, related_name='marked_answer')
     option_id = models.ForeignKey(Option, on_delete=models.CASCADE, related_name='marked_option')
 
