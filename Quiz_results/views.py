@@ -4,16 +4,29 @@ from rest_framework import filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from Quiz.models import Option, QuizQuestion
+from Quiz.models import Quiz, Option, QuizQuestion
 
 from Quiz_results.models import QuizResult, StudentAnswer, StudentResponse
 
 # ---------Serializers--------
-from .serializers import QuizResultSerializer
+from .serializers import QuizResultSerializer, QuizStudentDataSerializer
 from Profile.UserHelpers import UserTypeHelper
 # from .models import 
 
 from django.db.models import Prefetch
+
+from .score_card import generate_result
+
+class QuizStudentDataView(APIView):
+
+    def get(self, request, format=None):
+        data=request.data
+        try:
+            quiz = Quiz.objects.get(id=data['quiz_id'])
+        except:
+            return Response({'message':'Quiz not found. Invalid quiz id'}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = QuizStudentDataSerializer(instance=quiz)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class AttemptQuiz(generics.CreateAPIView):
@@ -78,3 +91,9 @@ class AnswerQuizQuestion(APIView):
                 return Response({'message':'New response registered. Question attempted'}, status=status.HTTP_201_CREATED)
         return Response({'message':'No options provided. Question not attempted'}, status=status.HTTP_204_NO_CONTENT)
 
+class GenerateResult(APIView):
+    
+    def get(self, request, format=None):
+        data = request.data
+        response = generate_result(data['quiz_id'], request.user.id)
+        return response

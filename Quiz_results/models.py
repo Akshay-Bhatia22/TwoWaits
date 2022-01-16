@@ -35,3 +35,15 @@ class StudentResponse(models.Model):
     @property
     def response_id(self):
         return self.id
+
+class ScoreCard(models.Model):
+    quiz_result_score_id = models.ForeignKey(QuizResult, on_delete=models.CASCADE, related_name='quiz_result_score')
+    # data passes when result is generated 
+    title = models.CharField(max_length=100)
+    total_questions = models.IntegerField()
+    attempted = models.IntegerField()
+    correct = models.IntegerField()
+    wrong = models.IntegerField()
+    total_score = models.CharField(max_length=10)
+
+

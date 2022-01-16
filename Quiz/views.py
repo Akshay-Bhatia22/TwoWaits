@@ -87,15 +87,21 @@ class QuizCorrectOption(APIView):
 class CreatedQuizView(APIView):
     def get(self, request, format=None):
         data=request.data
-        quiz = Quiz.objects.get(id=data['quiz_id'])
+        try:
+            quiz = Quiz.objects.get(id=data['quiz_id'])
+        except:
+            return Response({'message':'Quiz not found. Quiz id invalid'}, status=status.HTTP_400_BAD_REQUEST)
         serializer = QuizFacultySerializer(instance=quiz)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class MyCreatedQuizzes(APIView):
     def get(self, request, format=None):
         quiz = Quiz.objects.filter(author_id=self.request.user.id)
+        if not quiz:
+            # there are no created quizzes by the logged in user
+            return Response({'message':'There are no quizzes to display. Seems like you have not made one :)'}, status=status.HTTP_204_NO_CONTENT)
         serializer = QuizFacultySerializer(instance=quiz, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 # class QuizCreate(APIView):
 
