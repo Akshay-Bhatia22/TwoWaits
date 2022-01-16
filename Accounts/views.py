@@ -113,7 +113,10 @@ class SendOTP(APIView):
 
     def post(self, request):
         try:
+            # To assign to celery task
             send_otp.delay(request.data.get('email',))
+            # To bypass celery service
+            # send_otp(request.data.get('email',))
             message = {'message':'OTP sent'}
             return Response(message, status=status.HTTP_200_OK)
         except:

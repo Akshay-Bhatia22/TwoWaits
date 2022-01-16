@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'Forum',
     'Quiz',
     'Notes',
+    'Quiz_results',
 
     # Dependencies
     'rest_framework',

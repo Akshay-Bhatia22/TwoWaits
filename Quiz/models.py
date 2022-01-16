@@ -6,7 +6,7 @@ from Accounts.models import UserAccount
 class Quiz(models.Model):
     author_id = models.ForeignKey(UserAccount, on_delete=models.CASCADE, related_name='quiz_faculty')
     title = models.CharField(max_length=100)
-    description = models.CharField(max_length=300)
+    description = models.CharField(max_length=300, blank=True, null=True)
     no_of_question = models.IntegerField()
     time_limit = models.IntegerField(blank=True, null=True)
 
