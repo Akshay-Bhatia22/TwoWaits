@@ -19,7 +19,7 @@ from .score_card import generate_result
 
 class QuizStudentDataView(APIView):
 
-    def get(self, request, format=None):
+    def post(self, request, format=None):
         data=request.data
         try:
             quiz = Quiz.objects.get(id=data['quiz_id'])
@@ -93,7 +93,7 @@ class AnswerQuizQuestion(APIView):
 
 class GenerateResult(APIView):
     
-    def get(self, request, format=None):
+    def post(self, request, format=None):
         data = request.data
         response = generate_result(data['quiz_id'], request.user.id)
         return response
