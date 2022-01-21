@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 # ---------Serializers--------
-from .serializers import QuestionSerializer, QuestionGenericSerializer, AnswerGenericSerializer, CommentGenericSerializer
+from .serializers import QuestionSerializer, QuestionGenericSerializer, AnswerGenericSerializer, CommentGenericSerializer, LikeAnswerSerializer
 
 from Profile.UserHelpers import UserTypeHelper
 from .models import Answer, Comment, LikeAnswer, Question
@@ -34,6 +34,19 @@ class ForumView(generics.ListAPIView):
         Prefetch('answer', to_attr='answers_list'))
     serializer_class = QuestionSerializer
     permission_classes = [AllowAny]
+
+class YourQuestions(APIView):
+    def get(self, request, format=None):
+        try:
+            questions = Question.objects.filter(author_id=self.request.user).prefetch_related(
+        Prefetch('answer', to_attr='answers_list'))
+            if questions:
+                serializer = QuestionSerializer(questions)
+                return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+            return Response({'message':'No questions asked'}, status=status.HTTP_200_OK)
+        except:
+            return Response({'message':'User not found'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class QuestionCUD(APIView):
@@ -151,7 +164,7 @@ class LikeUnlikeAnswer(APIView):
                 serializer = LikeAnswerSerializer(data=data)
                 return check_save_serializer(serializer)
         except:
-            return Response({'message':'Error'})
+            return Response({'message':'Error maybe answer doesn\'t exist'}, status=status.HTTP_400_BAD_REQUEST)
 
 # class QuestionCreate(generics.RetrieveUpdateDestroyAPIView):
 #     queryset = Question.objects.all().prefetch_related(Prefetch('answer', to_attr='answers_list'))

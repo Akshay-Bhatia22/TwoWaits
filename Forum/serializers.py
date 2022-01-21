@@ -79,3 +79,8 @@ class CommentGenericSerializer(ModelSerializer):
     class Meta:
         model = Comment
         fields = '__all__'
+
+class LikeAnswerSerializer(ModelSerializer):
+    class Meta:
+        model = LikeAnswer
+        fields = '__all__'
