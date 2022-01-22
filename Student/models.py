@@ -38,6 +38,6 @@ class Student(models.Model):
     year = models.CharField(max_length=1, choices=YEAR, blank=True, null=True)
     interest = models.CharField(max_length=15, choices=INTEREST, blank=True, null=True)
     profile_pic = models.ImageField(upload_to = 'ProfilePic' ,default = 'ProfilePic/Avatar1.png')
-    
+    profile_pic_firebase = models.CharField(max_length=200, blank=True, null=True)
     def __str__(self):
         return self.name

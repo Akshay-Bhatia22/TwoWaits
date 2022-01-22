@@ -10,7 +10,7 @@ from .models import LikeAnswer, Question, Answer, Comment
 class StudentAuthorSerializer(ModelSerializer):
     class Meta:
         model = Student
-        fields = ['name', 'profile_pic']
+        fields = ['name', 'profile_pic', 'profile_pic_firebase']
 
 
 class FacultyAuthorSerializer(ModelSerializer):
