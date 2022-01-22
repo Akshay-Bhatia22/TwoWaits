@@ -10,5 +10,5 @@ urlpatterns = [
     path('answer/like-unlike/', views.LikeUnlikeAnswer.as_view()),
     path('comment/', views.CommentCUD.as_view()),
     path('your-questions/', views.YourQuestions.as_view()),
-
+    
 ]

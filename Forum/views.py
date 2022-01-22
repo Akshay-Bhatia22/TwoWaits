@@ -34,19 +34,16 @@ class ForumView(generics.ListAPIView):
         Prefetch('answer', to_attr='answers_list'))
     serializer_class = QuestionSerializer
     permission_classes = [AllowAny]
+    
 
-class YourQuestions(APIView):
-    def get(self, request, format=None):
-        try:
-            questions = Question.objects.filter(author_id=self.request.user).prefetch_related(
+class YourQuestions(generics.ListAPIView):
+    
+    serializer_class = QuestionSerializer
+    permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        queryset = Question.objects.filter(author_id=self.request.user.id).prefetch_related(
         Prefetch('answer', to_attr='answers_list'))
-            if questions:
-                serializer = QuestionSerializer(questions)
-                return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-            return Response({'message':'No questions asked'}, status=status.HTTP_200_OK)
-        except:
-            return Response({'message':'User not found'}, status=status.HTTP_400_BAD_REQUEST)
-
+        return queryset
 
 
 class QuestionCUD(APIView):

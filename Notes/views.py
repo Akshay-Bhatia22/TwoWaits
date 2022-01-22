@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.serializers import Serializer
 from .models import BookmarkNotes, File, Note
-from .serializers import BookmarkNotesSerializer, NoteCreateSerializer, NoteSerializer
+from .serializers import BookmarkNotesSerializer, NoteCreateSerializer, NoteSerializer, NoteGenericSerializer
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -110,3 +110,11 @@ class BookmarkNotesAdd(APIView):
                 return Response(message,status=status.HTTP_201_CREATED)
         except:
             return Response({'message':'Invalid data entered; Either user or note doesn\'t exist'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+
+class YourBookmarkedNotes(generics.ListAPIView):
+    serializer_class = NoteGenericSerializer
+    permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        queryset = Note.objects.filter(bookmark_note_id__user_id=self.request.user.id)
+        return queryset

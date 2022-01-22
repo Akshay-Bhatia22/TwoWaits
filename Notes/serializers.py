@@ -40,3 +40,12 @@ class BookmarkNotesSerializer(ModelSerializer):
     class Meta:
         model = BookmarkNotes
         fields = '__all__'
+
+
+class NoteGenericSerializer(ModelSerializer):
+    note_file = FileSerializer(many=True)
+    
+    class Meta:
+        model = Note
+        fields = ['id', 'title', 'description', 'uploaded', 'author_id', 'note_file']
+    

@@ -13,5 +13,5 @@ urlpatterns = [
     path('file/', views.FileAdd.as_view()),
 
     path('bookmark/', views.BookmarkNotesAdd.as_view()),
-    
+    path('your-bookmarked/', views.YourBookmarkedNotes.as_view()),
 ]

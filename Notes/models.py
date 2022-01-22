@@ -46,4 +46,4 @@ class BookmarkNotes(models.Model):
         Note, on_delete=models.CASCADE, related_name='bookmark_note_id')
     
     def __str__(self):
-        return self.note_id
+        return str(self.note_id)
