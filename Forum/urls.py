@@ -10,5 +10,8 @@ urlpatterns = [
     path('answer/like-unlike/', views.LikeUnlikeAnswer.as_view()),
     path('comment/', views.CommentCUD.as_view()),
     path('your-questions/', views.YourQuestions.as_view()),
-    
+    # add/remove bookmark on question
+    # your bookmarked questions
+    path('bookmark/', views.BookmarkQuestionAdd.as_view()),
+    path('your-bookmarked/', views.YourBookmarkedQuestions.as_view()),
 ]

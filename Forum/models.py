@@ -67,3 +67,12 @@ class LikeAnswer(models.Model):
     author_id = models.ForeignKey(
         UserAccount, on_delete=models.CASCADE, related_name='like_author')
     likes = models.IntegerField(default=0)
+
+class BookmarkQuestion(models.Model):
+    user_id = models.ForeignKey(
+        UserAccount, on_delete=models.CASCADE, related_name='user_bookmark_question')
+    question_id = models.ForeignKey(
+        Question, on_delete=models.CASCADE, related_name='bookmark_question_id')
+    
+    def __str__(self):
+        return str(self.question_id)

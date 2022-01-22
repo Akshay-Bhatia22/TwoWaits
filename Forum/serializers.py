@@ -4,7 +4,7 @@ from Faculty.models import Faculty
 from Student.models import Student
 from Accounts.models import UserAccount
 
-from .models import LikeAnswer, Question, Answer, Comment
+from .models import BookmarkQuestion, LikeAnswer, Question, Answer, Comment
 
 
 class StudentAuthorSerializer(ModelSerializer):
@@ -16,7 +16,8 @@ class StudentAuthorSerializer(ModelSerializer):
 class FacultyAuthorSerializer(ModelSerializer):
     class Meta:
         model = Faculty
-        fields = ['name', 'profile_pic']
+        # Gender so that sir/ma'am can be appended to the name
+        fields = ['name', 'gender', 'profile_pic']
 
 
 class AuthorSerializer(ModelSerializer):
@@ -83,4 +84,9 @@ class CommentGenericSerializer(ModelSerializer):
 class LikeAnswerSerializer(ModelSerializer):
     class Meta:
         model = LikeAnswer
+        fields = '__all__'
+
+class BookmarkQuestionsSerializer(ModelSerializer):
+    class Meta:
+        model = BookmarkQuestion
         fields = '__all__'

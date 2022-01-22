@@ -10,7 +10,7 @@ from .models import CorrectOption, Option, Quiz, QuizQuestion
 class FacultyAuthorSerializer(ModelSerializer):
     class Meta:
         model = Faculty
-        fields = ['name', 'profile_pic']
+        fields = ['name', 'gender', 'profile_pic']
 
 class AuthorSerializer(ModelSerializer):
     faculty = FacultyAuthorSerializer()
