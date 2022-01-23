@@ -26,7 +26,7 @@ class StudentProfileSerializer(ModelSerializer):
 class FacultyProfileGenericSerializer(ModelSerializer):
     class Meta:
         model = Faculty
-        fields = ['id','name', 'department','college', 'gender','dob', 'profile_pic']
+        fields = '__all__'
 
 class StudentProfileGenericSerializer(ModelSerializer):
     class Meta:

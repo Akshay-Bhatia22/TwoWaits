@@ -1,3 +1,4 @@
+from django.http import response
 from rest_framework import status, generics
 from rest_framework import filters
 from rest_framework.views import APIView
@@ -5,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from Faculty.models import Faculty
+from Student.models import Student
 
 # ---------Serializers--------
 from .serializers import FacultyProfileSerializer, StudentProfileSerializer, FacultyProfileGenericSerializer, StudentProfileGenericSerializer
@@ -19,7 +21,7 @@ class ProfileView(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def get(self, request, format=None):
-        helper = UserTypeHelper(request)
+        helper = UserTypeHelper(request, path=False)
         try:
             data = helper.get_specific_user_by_id()
             serializer = helper.user_serializer(data)
@@ -78,18 +80,10 @@ class RelatedFacultyProfile(generics.ListAPIView):
     def get_queryset(self):
         helper = UserTypeHelper(self.request, path=False)
         if helper.user_type == 'F':
-            print('no')
             queryset = Faculty.objects.filter(department=self.request.user.faculty.department)
         if helper.user_type == 'S':
-            print('yes')
             queryset = Faculty.objects.filter(department=self.request.user.student.branch)        
         return queryset
-
-# class RelatedFacultyProfile(APIView):
-#     def get(self, request, format=None):
-#         print(self.request.user.faculty.department)
-#         print(UserAccount.objects.filter(faculty__department='CS'))
-#         return Response({'message':'ok'})
 
 
 class RelatedStudentProfile(generics.ListAPIView):
@@ -97,11 +91,23 @@ class RelatedStudentProfile(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
-        helper = UserTypeHelper(self.request)
+        helper = UserTypeHelper(self.request, path=False)
         if helper.user_type == 'F':
-            queryset = UserAccount.objects.filter(student__branch=self.request.user.faculty.department)
+            queryset = Student.objects.filter(branch=self.request.user.faculty.department)
         if helper.user_type == 'S':
-            queryset = UserAccount.objects.filter(student__branch=self.request.user.student.branch)        
+            queryset = Student.objects.filter(branch=self.request.user.student.branch)        
         return queryset
 
+class RelatedPeopleProfile(APIView):
+
+    def get(self, request, format=None):
+        # helper = UserTypeHelper(self.request, path=False)
+        # print(helper.user_type)
+        # if helper.user_type == 'F':
+        #     queryset = Student.objects.filter(branch=self.request.user.faculty.department)
+        #     print(queryset)
+        #     serializer = StudentProfileGenericSerializer(queryset)
+        #     print(serializer.data)
+
+        return Response({'message':'testing'})
 # ----------------------------------------------------------------------------------------------------------------------------------
