@@ -39,6 +39,13 @@ class NoteViewset(generics.GenericAPIView, mixins.CreateModelMixin):
     #     headers = self.get_success_headers(serializer.data)
     #     return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
+class NoteView(generics.ListAPIView):
+    serializer_class = NoteGenericSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return Note.objects.all()
+
 class NoteCreate(generics.CreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView, generics.GenericAPIView):
 
     serializer_class = NoteCreateSerializer
