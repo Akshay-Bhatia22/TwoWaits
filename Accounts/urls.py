@@ -15,4 +15,5 @@ urlpatterns = [
     path('forgot-reset/', views.ForgotResetPassword.as_view()),
     path('token/', TokenObtainPairView.as_view()),
     path('token/refresh/', TokenRefreshView.as_view()),
+    path('renter-email/', views.RenterEmail.as_view()),
 ]
