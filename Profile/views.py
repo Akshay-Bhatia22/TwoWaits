@@ -4,11 +4,15 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
+from Faculty.models import Faculty
+
 # ---------Serializers--------
-from .serializers import FacultyProfileSerializer, StudentProfileSerializer
+from .serializers import FacultyProfileSerializer, StudentProfileSerializer, FacultyProfileGenericSerializer, StudentProfileGenericSerializer
 
 from Profile.UserHelpers import UserTypeHelper
+from Accounts.models import UserAccount
 
+from Profile import serializers
 
 class ProfileView(APIView):
 
@@ -58,3 +62,46 @@ class ProfileView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response({'message': 'Invalid data entered'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# ------------------------------------------------TESTING REQUIRED-----------------------------------------------------------------------------
+# ----------------filter(on college name)
+
+# from itertools import chain 
+# combined_list = list(chain(q1,q2))
+
+
+class RelatedFacultyProfile(generics.ListAPIView):
+    serializer_class = FacultyProfileGenericSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        helper = UserTypeHelper(self.request, path=False)
+        if helper.user_type == 'F':
+            print('no')
+            queryset = Faculty.objects.filter(department=self.request.user.faculty.department)
+        if helper.user_type == 'S':
+            print('yes')
+            queryset = Faculty.objects.filter(department=self.request.user.student.branch)        
+        return queryset
+
+# class RelatedFacultyProfile(APIView):
+#     def get(self, request, format=None):
+#         print(self.request.user.faculty.department)
+#         print(UserAccount.objects.filter(faculty__department='CS'))
+#         return Response({'message':'ok'})
+
+
+class RelatedStudentProfile(generics.ListAPIView):
+    serializer_class = StudentProfileGenericSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        helper = UserTypeHelper(self.request)
+        if helper.user_type == 'F':
+            queryset = UserAccount.objects.filter(student__branch=self.request.user.faculty.department)
+        if helper.user_type == 'S':
+            queryset = UserAccount.objects.filter(student__branch=self.request.user.student.branch)        
+        return queryset
+
+# ----------------------------------------------------------------------------------------------------------------------------------

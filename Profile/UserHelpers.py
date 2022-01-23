@@ -8,14 +8,15 @@ from .serializers import FacultyProfileSerializer, StudentProfileSerializer
 
 class UserTypeHelper:
 
-    def __init__(self, request):
+    def __init__(self, request, path=True):
         self.request = request
-        if 'student' in self.request.get_full_path():
-            self.user_type = 'S'
+        if path:
+            if 'student' in self.request.get_full_path():
+                self.user_type = 'S'
 
-        elif 'faculty' in request.get_full_path():
-            self.user_type = 'F'
-
+            elif 'faculty' in request.get_full_path():
+                self.user_type = 'F'
+        # path=False
         else:
             if hasattr(self.request.user, 'student'):
                 print("STUDENT via get or put")
@@ -49,3 +50,12 @@ class UserTypeHelper:
             return Faculty.objects.filter(faculty_account_id=self.request.user.id).exists()
         if self.user_type == 'S':
             return Student.objects.filter(student_account_id=self.request.user.id).exists()
+
+# for post login profile type declaration
+def UserTypeHelperByID(user):
+    if hasattr(user, 'student'):
+        return {'type':'student'}
+    elif hasattr(user, 'faculty'):
+        return {'type':'faculty'}
+    else:
+        return {'type':'not known Complete profile first'}

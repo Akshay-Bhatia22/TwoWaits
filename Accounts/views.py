@@ -22,6 +22,8 @@ from django.core.mail import EmailMultiAlternatives
 from django.utils import timezone
 from datetime import timedelta
 
+from Profile.UserHelpers import UserTypeHelperByID
+
 from .tasks import send_otp
 # # ------OTP-------
 otp_expire_duration = 2
@@ -98,6 +100,8 @@ class LoginAccount(APIView):
                     return Response(message, status=status.HTTP_503_SERVICE_UNAVAILABLE)
                 else:
                     message = {'message':'Login verified'}
+                    # for user type declaration
+                    message.update(UserTypeHelperByID(entered_usr))
                     return Response(message, status=status.HTTP_202_ACCEPTED)
             else:
                 message = {'message':'Incorrect password'}
