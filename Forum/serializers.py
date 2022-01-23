@@ -4,19 +4,20 @@ from Faculty.models import Faculty
 from Student.models import Student
 from Accounts.models import UserAccount
 
-from .models import LikeAnswer, Question, Answer, Comment
+from .models import BookmarkQuestion, LikeAnswer, Question, Answer, Comment
 
 
 class StudentAuthorSerializer(ModelSerializer):
     class Meta:
         model = Student
-        fields = ['name', 'profile_pic']
+        fields = ['name', 'profile_pic', 'profile_pic_firebase']
 
 
 class FacultyAuthorSerializer(ModelSerializer):
     class Meta:
         model = Faculty
-        fields = ['name', 'profile_pic']
+        # Gender so that sir/ma'am can be appended to the name
+        fields = ['name', 'gender', 'profile_pic']
 
 
 class AuthorSerializer(ModelSerializer):
@@ -78,4 +79,14 @@ class AnswerGenericSerializer(ModelSerializer):
 class CommentGenericSerializer(ModelSerializer):
     class Meta:
         model = Comment
+        fields = '__all__'
+
+class LikeAnswerSerializer(ModelSerializer):
+    class Meta:
+        model = LikeAnswer
+        fields = '__all__'
+
+class BookmarkQuestionsSerializer(ModelSerializer):
+    class Meta:
+        model = BookmarkQuestion
         fields = '__all__'

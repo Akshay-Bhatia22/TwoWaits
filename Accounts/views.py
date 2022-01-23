@@ -1,4 +1,5 @@
 # ------ rest framework imports -------
+from django.http import response
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
@@ -21,6 +22,8 @@ from Project_TwoWaits.settings import EMAIL_HOST_USER
 from django.core.mail import EmailMultiAlternatives
 from django.utils import timezone
 from datetime import timedelta
+
+from Profile.UserHelpers import UserTypeHelperByID
 
 from .tasks import send_otp
 # # ------OTP-------
@@ -98,6 +101,8 @@ class LoginAccount(APIView):
                     return Response(message, status=status.HTTP_503_SERVICE_UNAVAILABLE)
                 else:
                     message = {'message':'Login verified'}
+                    # for user type declaration
+                    message.update(UserTypeHelperByID(entered_usr))
                     return Response(message, status=status.HTTP_202_ACCEPTED)
             else:
                 message = {'message':'Incorrect password'}
@@ -114,9 +119,9 @@ class SendOTP(APIView):
     def post(self, request):
         try:
             # To assign to celery task
-            send_otp.delay(request.data.get('email',))
+            # send_otp.delay(request.data.get('email',))
             # To bypass celery service
-            # send_otp(request.data.get('email',))
+            send_otp(request.data.get('email',))
             message = {'message':'OTP sent'}
             return Response(message, status=status.HTTP_200_OK)
         except:
@@ -187,3 +192,15 @@ class ForgotResetPassword(APIView):
         except:
             message = {'message':'User not found'}
             return Response(message, status=status.HTTP_401_UNAUTHORIZED)
+
+class RenterEmail(APIView):
+    permission_classes = (AllowAny,)
+    # first it deletes the incorrect email account
+    # FLOW : after this API signup API is called
+    # input : account_id received after signup
+    def post(self, request, format=None):
+        data = request.data
+        try:
+            return Response(UserAccount.objects.get(id=data['account_id']).delete(), status=status.HTTP_202_ACCEPTED)
+        except:
+            return Response({'message':'Account not found'}, status=status.HTTP_200_OK)

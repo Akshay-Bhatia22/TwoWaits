@@ -6,10 +6,10 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 # ---------Serializers--------
-from .serializers import QuestionSerializer, QuestionGenericSerializer, AnswerGenericSerializer, CommentGenericSerializer
+from .serializers import QuestionSerializer, QuestionGenericSerializer, AnswerGenericSerializer, CommentGenericSerializer, LikeAnswerSerializer, BookmarkQuestionsSerializer
 
 from Profile.UserHelpers import UserTypeHelper
-from .models import Answer, Comment, LikeAnswer, Question
+from .models import Answer, BookmarkQuestion, Comment, LikeAnswer, Question
 
 from django.db.models import Prefetch
 
@@ -34,6 +34,16 @@ class ForumView(generics.ListAPIView):
         Prefetch('answer', to_attr='answers_list'))
     serializer_class = QuestionSerializer
     permission_classes = [AllowAny]
+    
+
+class YourQuestions(generics.ListAPIView):
+    
+    serializer_class = QuestionSerializer
+    permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        queryset = Question.objects.filter(author_id=self.request.user.id).prefetch_related(
+        Prefetch('answer', to_attr='answers_list'))
+        return queryset
 
 
 class QuestionCUD(APIView):
@@ -151,7 +161,7 @@ class LikeUnlikeAnswer(APIView):
                 serializer = LikeAnswerSerializer(data=data)
                 return check_save_serializer(serializer)
         except:
-            return Response({'message':'Error'})
+            return Response({'message':'Error maybe answer doesn\'t exist'}, status=status.HTTP_400_BAD_REQUEST)
 
 # class QuestionCreate(generics.RetrieveUpdateDestroyAPIView):
 #     queryset = Question.objects.all().prefetch_related(Prefetch('answer', to_attr='answers_list'))
@@ -161,3 +171,38 @@ class LikeUnlikeAnswer(APIView):
 
 #     def get_queryset(self):
 #         return self.queryset.filter(author_id=self.request.user)
+
+
+class BookmarkQuestionAdd(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, format=None):
+        data = request.data
+        # override_request
+        data['user_id'] = request.user.id
+        try:
+            try:
+                # question already bookmarked
+                existing_note = BookmarkQuestion.objects.filter(user_id=data['user_id']).filter(question_id=data['question_id']).first()
+                print(existing_note)
+                # unbookmark existing question
+                existing_note.delete()
+                return Response({'message':'Unbookmarked'}, status=status.HTTP_200_OK)
+            except:
+                # question bookmark doesn't exist
+                serializer = BookmarkQuestionsSerializer(data=data)
+                if serializer.is_valid():
+                    serializer.save()
+                message = {'message':'Bookmarked'}
+                message.update(serializer.data)
+                return Response(message,status=status.HTTP_201_CREATED)
+        except:
+            return Response({'message':'Invalid data entered; Either user or question doesn\'t exist'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+
+class YourBookmarkedQuestions(generics.ListAPIView):
+    serializer_class = QuestionSerializer
+    permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        queryset = Question.objects.filter(bookmark_question_id__user_id=self.request.user.id)
+        return queryset
