@@ -21,7 +21,7 @@ class ProfileView(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def get(self, request, format=None):
-        helper = UserTypeHelper(request, path=False)
+        helper = UserTypeHelper(request, path=True)
         try:
             data = helper.get_specific_user_by_id()
             serializer = helper.user_serializer(data)
@@ -30,7 +30,7 @@ class ProfileView(APIView):
             return Response({'message': 'User not found'}, status=status.HTTP_401_UNAUTHORIZED)
 
     def post(self, request, format=None):
-        helper = UserTypeHelper(request)
+        helper = UserTypeHelper(request, path=False)
         data = request.data
         data[helper.get_user_account_id()] = request.user.id
         if helper.user_type_exists():
@@ -46,7 +46,7 @@ class ProfileView(APIView):
         return Response(data={'message': 'Invalid data entered'}, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, format=None):
-        helper = UserTypeHelper(request)
+        helper = UserTypeHelper(request, path=False)
         data = request.data
 
         data[helper.get_user_account_id()] = request.user.id
