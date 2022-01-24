@@ -15,6 +15,7 @@ from Profile.UserHelpers import UserTypeHelper
 from Accounts.models import UserAccount
 
 from Profile import serializers
+from Accounts.views import get_contact_id
 
 class ProfileView(APIView):
 
@@ -30,7 +31,7 @@ class ProfileView(APIView):
             return Response({'message': 'User not found'}, status=status.HTTP_401_UNAUTHORIZED)
 
     def post(self, request, format=None):
-        helper = UserTypeHelper(request, path=False)
+        helper = UserTypeHelper(request, path=True)
         data = request.data
         data[helper.get_user_account_id()] = request.user.id
         if helper.user_type_exists():
@@ -42,7 +43,10 @@ class ProfileView(APIView):
 
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            message=serializer.data
+            message.update(get_contact_id(user_id=request.user.id, type='signup'))
+            # return Response(serializer.data)
+            return Response(message)
         return Response(data={'message': 'Invalid data entered'}, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, format=None):
@@ -62,7 +66,10 @@ class ProfileView(APIView):
 
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            message=serializer.data
+            message.update(get_contact_id(user_id=request.user.id))
+            # return Response(serializer.data)
+            return Response(message)
         return Response({'message': 'Invalid data entered'}, status=status.HTTP_400_BAD_REQUEST)
 
 

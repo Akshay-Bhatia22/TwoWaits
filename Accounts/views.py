@@ -29,6 +29,7 @@ from .tasks import send_otp
 # # ------OTP-------
 otp_expire_duration = 2
 
+from Chat.models import Contact
 
 # # -------CHANGE TO CLASS BASED--------
 # # ------ For Sending OTP to passed E-Mail -------
@@ -55,6 +56,19 @@ otp_expire_duration = 2
 #     msg.send()
 # #------------------------------------------------
 
+def get_contact_id(user_id=None,user=None,type='login'):
+    try:
+        if user_id:
+            user = UserAccount.objects.get(id=user_id)
+        if type=='login':
+            c = Contact.objects.get(user=user)
+            return {'contact_id': c.id}
+        elif type=='signup':
+            c = Contact.objects.create(user=user)
+            return {'contact_id': c.id}
+    except:
+        return None
+
 class NewAccount(APIView):
     permission_classes = (AllowAny,)
     
@@ -78,7 +92,7 @@ class NewAccount(APIView):
                 if serializer.is_valid():
                     # send_otp(user_email)
                     serializer.save()
-                return Response(serializer.data)
+                    return Response(serializer.data)
             except:
                 message = 'Please Enter a valid password. Password should have atleast 1 Capital Letter, 1 Number and 1 Special Character in it. Also it should not contain 123'
                 return Response({'message': message},status=status.HTTP_400_BAD_REQUEST)
@@ -103,6 +117,7 @@ class LoginAccount(APIView):
                     message = {'message':'Login verified'}
                     # for user type declaration
                     message.update(UserTypeHelperByID(entered_usr))
+                    message.update(get_contact_id(user=entered_usr, type='login'))
                     return Response(message, status=status.HTTP_202_ACCEPTED)
             else:
                 message = {'message':'Incorrect password'}
