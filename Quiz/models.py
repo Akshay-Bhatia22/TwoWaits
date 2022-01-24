@@ -9,7 +9,8 @@ class Quiz(models.Model):
     description = models.CharField(max_length=300, blank=True, null=True)
     no_of_question = models.IntegerField()
     time_limit = models.IntegerField(blank=True, null=True)
-
+    banner_firebase = models.CharField(max_length=300, blank=True, null=True)
+    
     def __str__(self):
         return self.title
     

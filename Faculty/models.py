@@ -24,6 +24,7 @@ class Faculty(models.Model):
     gender = models.CharField(max_length=8, choices=GENDER, blank=True, null=True)
     dob = models.DateField(blank=True, null=True)
     profile_pic = models.ImageField(upload_to = 'ProfilePic' ,default = 'ProfilePic/Avatar1.png')
+    profile_pic_firebase = models.CharField(max_length=300, blank=True, null=True)
     
     def __str__(self):
         return self.name
