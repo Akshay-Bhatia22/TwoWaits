@@ -3,7 +3,8 @@ from django.db import models
 from Accounts.models import UserAccount 
 
 from django.utils import timezone
-
+from Faculty.models import Faculty
+from Student.models import Student
 class Contact(models.Model):
     user = models.ForeignKey(UserAccount, on_delete=models.CASCADE, related_name='contact')
     status = models.BooleanField(default=0)
@@ -18,6 +19,24 @@ class Contact(models.Model):
     @property
     def contact_id(self):
         return self.id
+    
+    def contact_name(self):
+        try:
+            return Faculty.objects.get(id=self.id).name
+        except:
+            try:
+                return Student.objects.get(id=self.id).name
+            except:
+                return 'Anonymous' 
+    def contact_dp(self):
+        try:
+            return str(Faculty.objects.get(id=self.id).profile_pic)
+        except:
+            try:
+                return str(Student.objects.get(id=self.id).profile_pic)
+            except:
+                return 'Anonymous'
+            
 
 class Friend(models.Model):
     
@@ -36,7 +55,11 @@ class Conversation(models.Model):
     name = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
-        return self.name
+        return self.id
+    
+    @property
+    def conversation_id(self):
+        return self.id
     
 class Message(models.Model):
     conversation_id = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='conv_message')

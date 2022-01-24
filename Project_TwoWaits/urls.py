@@ -26,6 +26,6 @@ urlpatterns = [
     path('quiz/', include('Quiz.urls')),
     path('quiz/results/', include('Quiz_results.urls')),
     path('notes/', include('Notes.urls')),
-
-
+    path('chat/', include('Chat.urls')),
+    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
