@@ -9,6 +9,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from .serializers import ConversationSerializer, ContactSerializer
 
 from .models import Conversation, Contact
+from Accounts.models import UserAccount
 
 # for fetching all conversations and messages
 class ConversationView(generics.ListAPIView):
@@ -48,3 +49,29 @@ class ContactsView(generics.ListAPIView):
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
     permission_classes = [AllowAny]
+
+# class ToggleChat(APIView):
+#     def post(self, request, format=None):
+#         user = UserAccount.objects.get(id=request.user.id)
+#         print(user)
+#         flag = request.data['flag']
+#         if flag==1:
+#             try:
+#                 print(request.user.id)
+#                 c=Contact.objects.filter(user=request.user.id)
+#                 print(c)
+#                 return Response({'message':'Contact exists'}, status=status.HTTP_200_OK)
+#             except:
+#                 Contact.objects.create(user=user)
+#                 return Response({'message':'Contact created'}, status=status.HTTP_201_CREATED)
+#         elif flag==0:
+#             # Reomve chat functionality
+#             try:
+#                 c = Contact.objects.get(user=request.user.id)
+#                 c.delete()
+#                 return Response({'message':'Contact deleted'}, status=status.HTTP_202_ACCEPTED)
+#             except:
+#                 return Response({'message':'Contact already deleted'}, status=status.HTTP_200_OK)
+#         else:
+#             return Response({'message':'enter a flag 0 to delete 1 to create'}, status=status.HTTP_400_BAD_REQUEST)
+

@@ -30,7 +30,7 @@ class Note(models.Model):
 class File(models.Model):
     note_id = models.ForeignKey(
         Note, on_delete=models.CASCADE, related_name='note_file')
-    file_obj = models.FileField(upload_to = 'Note_files')
+    file_obj = models.FileField(upload_to = 'Note_files', blank=True, null=True)
     file_obj_firebase = models.CharField(max_length=300, blank=True, null=True)
 
     def __str__(self):
