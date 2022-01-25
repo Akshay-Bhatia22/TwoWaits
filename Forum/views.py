@@ -34,7 +34,8 @@ class ForumView(generics.ListAPIView):
         Prefetch('answer', to_attr='answers_list'))
     serializer_class = QuestionSerializer
     permission_classes = [AllowAny]
-    
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['question', 'answer__answer']
 
 class YourQuestions(generics.ListAPIView):
     
