@@ -66,8 +66,8 @@ class LikeAnswer(models.Model):
     answer_id = models.ForeignKey(Answer, on_delete=models.CASCADE, related_name='like')
     author_id = models.ForeignKey(
         UserAccount, on_delete=models.CASCADE, related_name='like_author')
-    likes = models.IntegerField(default=0)
-
+    # likes = models.IntegerField(default=0)
+    like = models.BooleanField(default=1)
 class BookmarkQuestion(models.Model):
     user_id = models.ForeignKey(
         UserAccount, on_delete=models.CASCADE, related_name='user_bookmark_question')

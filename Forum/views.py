@@ -148,17 +148,23 @@ class LikeUnlikeAnswer(APIView):
             # if queryset not empty i.e user has already registered a like
             if obj:
                 obj = obj[0]
-                if obj.likes == 1:
-                    data['likes'] = 0
+                if obj.like == 1:
+                    # user has liked
+                    data['like'] = 0
+                    # obj.like = 0
+                    # obj.save()
 
-                elif obj.likes == 0:
-                    data['likes'] = 1                
+                elif obj.like == 0:
+                    # user has not liked
+                    data['like'] = 1
+                    # obj.like = 1
+                    # obj.save()                
 
                 serializer = LikeAnswerSerializer(instance=obj, data=data)
                 return check_save_serializer(serializer)
 
             else:
-                data['likes'] = 1
+                data['like'] = 1
                 serializer = LikeAnswerSerializer(data=data)
                 return check_save_serializer(serializer)
         except:

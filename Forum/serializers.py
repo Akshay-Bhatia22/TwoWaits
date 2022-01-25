@@ -48,7 +48,20 @@ class AnswerSerializer(ModelSerializer):
     def to_representation(self, instance):
         data = super(AnswerSerializer, self).to_representation(instance)
         data['likes'] = LikeAnswer.objects.filter(
-            answer_id=data['answer_id']).filter(likes=1).count()
+            answer_id=data['answer_id']).filter(like=1).count()
+        
+        request=self.context.get("request")
+        user = request.user.id
+        obj=LikeAnswer.objects.filter(answer_id=data['answer_id']).filter(author_id=user)
+        if obj:
+            if obj[0].like:
+                # like registered by current user
+                data['liked_by_user'] = 'True'
+            else:
+                data['liked_by_user'] = 'False'
+        else:
+            # like not registered on current answer
+            data['liked_by_user'] = 'False'
 
         return data
 
