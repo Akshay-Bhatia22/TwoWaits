@@ -47,5 +47,23 @@ class NoteGenericSerializer(ModelSerializer):
     
     class Meta:
         model = Note
-        fields = ['id', 'title', 'description', 'uploaded', 'author_id', 'note_file']
+        fields = ['id', 'title', 'description', 'uploaded', 'author_id', 'file_obj_firebase', 'note_file']
+    
+    def to_representation(self, instance):
+        data = super(NoteGenericSerializer, self).to_representation(instance)
+        note_id = data['id']
+        request=self.context.get("request")
+        user = request.user.id
+
+        obj=BookmarkNotes.objects.filter(user_id=user).filter(note_id=note_id)
+        if obj:
+            # bookmarked  by current user
+            data['bookmarked_by_user'] = 'True'
+        else:
+            # not bookmarked by current answer
+            data['bookmarked_by_user'] = 'False'
+
+        return data
+
+
     

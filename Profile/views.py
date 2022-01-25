@@ -28,7 +28,7 @@ class ProfileView(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def get(self, request, format=None):
-        helper = UserTypeHelper(request, path=True)
+        helper = UserTypeHelper(request, path=False)
         try:
             data = helper.get_specific_user_by_id()
             serializer = helper.user_serializer(data)

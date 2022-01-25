@@ -72,8 +72,23 @@ class QuestionSerializer(ModelSerializer):
 
     class Meta:
         model = Question
-        fields = ['question_id', 'author_id', 'question', 'raised', 'answer', ]
+        fields = ['question_id', 'author_id', 'question', 'raised', 'answer',]
 
+    def to_representation(self, instance):
+        data = super(QuestionSerializer, self).to_representation(instance)
+        question_id = data['question_id']
+        request=self.context.get("request")
+        user = request.user.id
+
+        obj=BookmarkQuestion.objects.filter(user_id=user).filter(question_id=question_id)
+        print(obj)
+        if obj:
+            # bookmarked  by current user
+            data['bookmarked_by_user'] = 'True'
+        else:
+            # not bookmarked by current answer
+            data['bookmarked_by_user'] = 'False'
+        return data
 # Exculdes nested serializers
 
 

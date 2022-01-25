@@ -15,7 +15,7 @@ class UserAccountSerializer(ModelSerializer):
 class FacultyProfileSerializer(ModelSerializer):
     class Meta:
         model = Faculty
-        fields = ['faculty_account_id', 'name', 'department','college', 'gender','dob', 'profile_pic']
+        fields = ['faculty_account_id', 'name', 'department','college', 'gender','dob', 'profile_pic', 'profile_pic_firebase']
 
 
 class StudentProfileSerializer(ModelSerializer):

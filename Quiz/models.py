@@ -18,6 +18,9 @@ class Quiz(models.Model):
     def quiz_id(self):
         return self.id
 
+    class Meta:
+        ordering = ['-id']
+
 class QuizQuestion(models.Model):
     quiz_id = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='question')
     question_text = models.CharField(max_length=150)
