@@ -9,13 +9,19 @@ from Faculty.models import Faculty
 from Student.models import Student
 
 # ---------Serializers--------
-from .serializers import FacultyProfileSerializer, StudentProfileSerializer, FacultyProfileGenericSerializer, StudentProfileGenericSerializer
+from .serializers import FacultyProfileSerializer, StudentProfileSerializer, FacultyProfileGenericSerializer, StudentProfileGenericSerializer, FeedbackSerializer
 
 from Profile.UserHelpers import UserTypeHelper
 from Accounts.models import UserAccount
 
 from Profile import serializers
 from Accounts.views import get_contact_id
+from Accounts.tasks import send_feedback
+
+def override_request(request):
+    data = request.data
+    data['author_id'] = request.user.id
+    return data
 
 class ProfileView(APIView):
 
@@ -118,3 +124,29 @@ class RelatedPeopleProfile(APIView):
 
         return Response({'message':'testing'})
 # ----------------------------------------------------------------------------------------------------------------------------------
+
+class Feedback(generics.CreateAPIView):
+    serializer_class = FeedbackSerializer
+    permission_classes = [IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        # call custom function here
+        try:
+            # helper = UserTypeHelper(request, path=False)
+            # username = helper.get_specific_username
+            # print(username)
+            send_feedback(serializer.data)
+        except:
+            print('error')
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create(self, serializer):
+        serializer.save()
+
+    def post(self, request, *args, **kwargs):
+        override_request(request)
+        return self.create(request, *args, **kwargs)

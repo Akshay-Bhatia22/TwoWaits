@@ -6,7 +6,7 @@ from Project_TwoWaits.settings import EMAIL_HOST_USER
 from django.core.mail import EmailMultiAlternatives
 from django.utils import timezone
 from django.template.loader import render_to_string
-
+from django.core.mail import send_mail
 
 # ------OTP-------
 otp_expire_duration = 2
@@ -39,3 +39,25 @@ def send_otp(email):
     msg.attach_alternative(html_content, "text/html")
     msg.send()
     return "email sent"
+
+def send_feedback(data):
+    user_id = data['author_id']
+    rating = data['rating']
+    message = data['message']
+    user_email = UserAccount.objects.get(id=user_id)
+    # To owner
+    send_mail(
+        f'Feedback by {user_email}',
+        f'Rated application as {rating} stars\n\n{message}',
+        EMAIL_HOST_USER,
+        [EMAIL_HOST_USER],
+        fail_silently=True,
+    )
+    # To user
+    send_mail(
+        f'You feedback is recorded',
+        f'Greeting from TwoWaits\nThanks for giving your valuable feedback.\n\n\nRegards\nTeam TwoWaits',
+        EMAIL_HOST_USER,
+        [user_email],
+        fail_silently=True,
+    )

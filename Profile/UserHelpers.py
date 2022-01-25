@@ -32,7 +32,13 @@ class UserTypeHelper:
             return Faculty.objects.get(faculty_account_id=self.request.user.id)
         if self.user_type == 'S':
             return Student.objects.get(student_account_id=self.request.user.id)
-
+    
+    def get_specific_username(self):
+        if self.user_type == 'F':
+            return Faculty.objects.get(faculty_account_id=self.request.user.id).name
+        if self.user_type == 'S':
+            return Student.objects.get(student_account_id=self.request.user.id).name
+    
     def user_serializer(self, data):
         if self.user_type == 'F':
             return FacultyProfileSerializer(data, many=False)

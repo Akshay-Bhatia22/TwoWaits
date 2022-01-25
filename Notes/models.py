@@ -13,6 +13,7 @@ class Note(models.Model):
         UserAccount, on_delete=models.CASCADE, related_name='note')
     title = models.CharField(max_length=150)
     description = models.CharField(max_length=200)
+    file_obj_firebase = models.CharField(max_length=300, blank=True, null=True)
     
     uploaded = models.DateTimeField(default=timezone.now)
 
