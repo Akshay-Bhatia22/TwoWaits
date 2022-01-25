@@ -29,8 +29,8 @@ def send_otp(email):
         new_otp.save()
         
     from_email, to = EMAIL_HOST_USER, email
-    subject = "OTP for TwoWaits Sign-Up"
-    text_content = f'Your One Time Password for signing up on V-Shop is {otp}.\nValid for only 2 minutes.\nDO NOT SHARE IT WITH ANYBODY.'
+    subject = "OTP for EduCool Sign-Up"
+    text_content = f'Your One Time Password for signing up on EduCool is {otp}.\nValid for only 2 minutes.\nDO NOT SHARE IT WITH ANYBODY.'
     user = email.split('@')[0]
     context = ({'user':user,'otp':otp, 'otp_expire_duration':otp_expire_duration})
     html_content = render_to_string('otp_email.html',context=context)
@@ -56,7 +56,7 @@ def send_feedback(data):
     # To user
     send_mail(
         f'You feedback is recorded',
-        f'Greeting from TwoWaits\nThanks for giving your valuable feedback.\n\n\nRegards\nTeam TwoWaits',
+        f'Greetings from EduCool\nThanks for giving your valuable feedback.\n\n\nRegards\nTeam Educool',
         EMAIL_HOST_USER,
         [user_email],
         fail_silently=True,

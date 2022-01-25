@@ -7,6 +7,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap');
         * {
             font-family: 'Source Sans Pro', sans-serif;
             margin: 0;
@@ -15,15 +16,17 @@
 
         }
       
-        .banner *{background-color: #A17867;  
-            margin:0;  
-            padding: 0.5em;
-            color: white;
-            text-align: center;
+        .banner *{background-color: #804D37;
+                display: flex;
+                margin: 0;
+                padding: 0.2em;
+                color: white;
+                align-items: center;
+                align-content: flex-start;
         }
         .content *{
             margin:0.2em;
-            padding: 0.7em;
+            padding: 0.4em;
             text-decoration: none;
 
         }
@@ -41,18 +44,27 @@
             font-family: 'Caveat', cursive;
 
         }
+        #logo {
+            position: relative;
+            width: 1em;
+            height: 1em;
+        }
+        h1 {
+            font-family: 'Poppins', sans-serif;
+            color: #FFF0E9;
+        }
     </style>
 </head>
 
     <body>
-        <div class='banner'><h1>TWO WAITS</h1></div>
+        <div class='banner'><h1><img id='logo' src="https://res.cloudinary.com/twowaitsmedia/image/upload/v1643129960/Template-static/Group_qfe9mx.png">EduCool</h1></div>
         <div class='content'>
             <h2>Dear {{user}}</h2>
             <h3>Your one time password is <span id='highlight'>{{otp}}</span>
-            for registering yourself with TwoWaits app.
+            for registering yourself with EduCool app.
             <br>Valid for only {{otp_expire_duration}} minutes.</h3>
             <p>Do not share it with anybody.</p>
-            <h3 id='footer'>Regards<br>Team TwoWaits</h3>
+            <h3 id='footer'>Regards<br>Team EduCool</h3>
 
         </div>
         <div class='banner'>
