@@ -208,6 +208,47 @@ class ForgotResetPassword(APIView):
             message = {'message':'User not found'}
             return Response(message, status=status.HTTP_401_UNAUTHORIZED)
 
+class ChangePassword(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        old_password = request.data.get("old_password")
+        new_password = request.data.get("new_password")
+        if old_password != new_password:
+            try:
+                user = UserAccount.objects.get(id=request.user.id)
+                if user.is_verified:
+                    if check_password(old_password, user.password):
+                        # Crrect old password
+                        print("old password matched")
+                        try:
+                            validate_password(new_password)
+                            try:
+                                user.password = make_password(new_password)
+                                user.save()
+                                message = {'message':'Password Changed Successfully'}
+                                return Response(message, status=status.HTTP_202_ACCEPTED)
+                            except:
+                                message = {'message':'Password could not be changed'}
+                                return Response(message, status=status.HTTP_406_NOT_ACCEPTABLE)
+                        except:
+                            message = 'Please Enter a valid password. Password should have atleast 1 Capital Letter, 1 Number and 1 Special Character in it. Also it should not contain 123'
+                            return Response({'message': message},status=status.HTTP_400_BAD_REQUEST)
+                    else:
+                        # incorrect old password
+                        message = 'Invalid old password'
+                        return Response({'message': message},status=status.HTTP_405_METHOD_NOT_ALLOWED)
+                else:
+                    message = {'message':'User not verified (OTP verification required)'}
+                    return Response(message, status=status.HTTP_403_FORBIDDEN) 
+            except:
+                message = {'message':'User not found'}
+                return Response(message, status=status.HTTP_401_UNAUTHORIZED)
+        else:
+            message = {'message':'New Password can\'t be same as old password'}
+            return Response(message, status=status.HTTP_409_CONFLICT)
+
+
 class RenterEmail(APIView):
     permission_classes = (AllowAny,)
     # first it deletes the incorrect email account

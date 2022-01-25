@@ -16,4 +16,6 @@ urlpatterns = [
     path('token/', TokenObtainPairView.as_view()),
     path('token/refresh/', TokenRefreshView.as_view()),
     path('renter-email/', views.RenterEmail.as_view()),
+    path('change-password/', views.ChangePassword.as_view()),
+
 ]
