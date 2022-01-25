@@ -67,7 +67,7 @@ def get_contact_id(user_id=None,user=None,type='login'):
             c = Contact.objects.create(user=user)
             return {'contact_id': c.id}
     except:
-        return None
+        return {'None':'Null'}
 
 class NewAccount(APIView):
     permission_classes = (AllowAny,)
@@ -92,7 +92,12 @@ class NewAccount(APIView):
                 if serializer.is_valid():
                     # send_otp(user_email)
                     serializer.save()
-                    return Response(serializer.data)
+                    message=serializer.data
+                    # try:
+                    #     message.update(get_contact_id(user_id=request.user.id, type='signup'))
+                    # except:
+                    #     pass
+                    return Response(message, status=status.HTTP_200_OK)
             except:
                 message = 'Please Enter a valid password. Password should have atleast 1 Capital Letter, 1 Number and 1 Special Character in it. Also it should not contain 123'
                 return Response({'message': message},status=status.HTTP_400_BAD_REQUEST)
@@ -116,8 +121,14 @@ class LoginAccount(APIView):
                 else:
                     message = {'message':'Login verified'}
                     # for user type declaration
-                    message.update(UserTypeHelperByID(entered_usr))
-                    message.update(get_contact_id(user=entered_usr, type='login'))
+                    try:
+                        message.update(UserTypeHelperByID(entered_usr))
+                    except:
+                        pass
+                    try:
+                        message.update(get_contact_id(user=entered_usr, type='login'))
+                    except:
+                        pass
                     return Response(message, status=status.HTTP_202_ACCEPTED)
             else:
                 message = {'message':'Incorrect password'}
