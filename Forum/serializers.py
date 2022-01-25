@@ -17,7 +17,7 @@ class FacultyAuthorSerializer(ModelSerializer):
     class Meta:
         model = Faculty
         # Gender so that sir/ma'am can be appended to the name
-        fields = ['name', 'gender', 'profile_pic']
+        fields = ['name', 'gender', 'profile_pic', 'profile_pic_firebase']
 
 
 class AuthorSerializer(ModelSerializer):
@@ -35,6 +35,23 @@ class CommentSerializer(ModelSerializer):
     class Meta:
         model = Comment
         fields = ['comment_id', 'author_id', 'comment', 'commented']
+    
+
+    def to_representation(self, instance):
+        data = super(CommentSerializer, self).to_representation(instance)
+        comment_id = data['comment_id']
+        request=self.context.get("request")
+        user = request.user.id
+
+        obj=Comment.objects.filter(author_id=user).filter(id=comment_id)
+        print(obj)
+        if obj:
+            # bookmarked  by current user
+            data['commented_by_user'] = 'True'
+        else:
+            # not bookmarked by current answer
+            data['commented_by_user'] = 'False'
+        return data
 
 
 class AnswerSerializer(ModelSerializer):

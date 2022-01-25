@@ -1,9 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 
-from Faculty.models import Faculty
-from Student.models import Student
-from Accounts.models import UserAccount
-
+from Forum.serializers import AuthorSerializer
 from .models import BookmarkNotes, Note, File
 class FileSerializer(ModelSerializer):
     class Meta:
@@ -44,7 +41,8 @@ class BookmarkNotesSerializer(ModelSerializer):
 
 class NoteGenericSerializer(ModelSerializer):
     note_file = FileSerializer(many=True)
-    
+    author_id = AuthorSerializer()
+
     class Meta:
         model = Note
         fields = ['id', 'title', 'description', 'uploaded', 'author_id', 'file_obj_firebase', 'note_file']
