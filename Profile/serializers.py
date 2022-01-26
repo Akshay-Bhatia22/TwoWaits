@@ -3,6 +3,7 @@ from rest_framework.serializers import ModelSerializer
 from Accounts.models import UserAccount
 
 from Faculty.models import Faculty
+from Profile.models import Feedback
 from Student.models import Student
 
 class UserAccountSerializer(ModelSerializer):
@@ -14,7 +15,7 @@ class UserAccountSerializer(ModelSerializer):
 class FacultyProfileSerializer(ModelSerializer):
     class Meta:
         model = Faculty
-        fields = ['faculty_account_id', 'name', 'department','college', 'gender','dob', 'profile_pic']
+        fields = ['faculty_account_id', 'name', 'department','college', 'gender','dob', 'profile_pic', 'profile_pic_firebase']
 
 
 class StudentProfileSerializer(ModelSerializer):
@@ -31,4 +32,9 @@ class FacultyProfileGenericSerializer(ModelSerializer):
 class StudentProfileGenericSerializer(ModelSerializer):
     class Meta:
         model = Student
+        fields = '__all__'
+
+class FeedbackSerializer(ModelSerializer):
+    class Meta:
+        model = Feedback
         fields = '__all__'

@@ -12,5 +12,5 @@ urlpatterns = [
     path('people-you-might-know/', views.RelatedPeopleProfile.as_view()),
     path('faculty-you-might-know/', views.RelatedFacultyProfile.as_view()),
     path('student-you-might-know/', views.RelatedStudentProfile.as_view()),
-    
+    path('feedback/', views.Feedback.as_view()),
 ]

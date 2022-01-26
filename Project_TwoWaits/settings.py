@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'Quiz',
     'Notes',
     'Quiz_results',
+    'Chat',
 
     # Dependencies
     'rest_framework',
@@ -64,6 +65,9 @@ INSTALLED_APPS = [
 
     # celery
     'django_celery_results',
+
+    # channels
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -215,7 +219,7 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS=True
-
+OTP_EXPIRE_DURATION = env('OTP_EXPIRE_DURATION')
 
 
 AUTH_USER_MODEL = 'Accounts.UserAccount'
@@ -261,3 +265,14 @@ CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Kolkata'
+
+# Channels
+ASGI_APPLICATION = 'Project_TwoWaits.asgi.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}

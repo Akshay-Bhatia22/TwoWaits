@@ -9,13 +9,17 @@ class Quiz(models.Model):
     description = models.CharField(max_length=300, blank=True, null=True)
     no_of_question = models.IntegerField()
     time_limit = models.IntegerField(blank=True, null=True)
-
+    banner_firebase = models.CharField(max_length=300, blank=True, null=True)
+    
     def __str__(self):
         return self.title
     
     @property
     def quiz_id(self):
         return self.id
+
+    class Meta:
+        ordering = ['-id']
 
 class QuizQuestion(models.Model):
     quiz_id = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='question')

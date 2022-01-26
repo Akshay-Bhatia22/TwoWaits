@@ -6,10 +6,11 @@ from Project_TwoWaits.settings import EMAIL_HOST_USER
 from django.core.mail import EmailMultiAlternatives
 from django.utils import timezone
 from django.template.loader import render_to_string
+from django.core.mail import send_mail
 
-
-# ------OTP-------
-otp_expire_duration = 2
+from Project_TwoWaits.settings import OTP_EXPIRE_DURATION
+# # ------OTP-------
+otp_expire_duration = OTP_EXPIRE_DURATION
 
 # -------CHANGE TO CLASS BASED--------
 # ------ For Sending OTP to passed E-Mail -------
@@ -29,8 +30,8 @@ def send_otp(email):
         new_otp.save()
         
     from_email, to = EMAIL_HOST_USER, email
-    subject = "OTP for TwoWaits Sign-Up"
-    text_content = f'Your One Time Password for signing up on V-Shop is {otp}.\nValid for only 2 minutes.\nDO NOT SHARE IT WITH ANYBODY.'
+    subject = "OTP for EduCool Sign-Up"
+    text_content = f'Your One Time Password for signing up on EduCool is {otp}.\nValid for only 2 minutes.\nDO NOT SHARE IT WITH ANYBODY.'
     user = email.split('@')[0]
     context = ({'user':user,'otp':otp, 'otp_expire_duration':otp_expire_duration})
     html_content = render_to_string('otp_email.html',context=context)
@@ -39,3 +40,25 @@ def send_otp(email):
     msg.attach_alternative(html_content, "text/html")
     msg.send()
     return "email sent"
+
+def send_feedback(data):
+    user_id = data['author_id']
+    rating = data['rating']
+    message = data['message']
+    user_email = UserAccount.objects.get(id=user_id)
+    # To owner
+    send_mail(
+        f'Feedback by {user_email}',
+        f'Rated application as {rating} stars\n\n{message}',
+        EMAIL_HOST_USER,
+        [EMAIL_HOST_USER],
+        fail_silently=True,
+    )
+    # To user
+    send_mail(
+        f'You feedback is recorded',
+        f'Greetings from EduCool\nThanks for giving your valuable feedback.\n\n\nRegards\nTeam Educool',
+        EMAIL_HOST_USER,
+        [user_email],
+        fail_silently=True,
+    )

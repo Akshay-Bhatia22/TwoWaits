@@ -9,19 +9,26 @@ from Faculty.models import Faculty
 from Student.models import Student
 
 # ---------Serializers--------
-from .serializers import FacultyProfileSerializer, StudentProfileSerializer, FacultyProfileGenericSerializer, StudentProfileGenericSerializer
+from .serializers import FacultyProfileSerializer, StudentProfileSerializer, FacultyProfileGenericSerializer, StudentProfileGenericSerializer, FeedbackSerializer
 
 from Profile.UserHelpers import UserTypeHelper
 from Accounts.models import UserAccount
 
 from Profile import serializers
+from Accounts.views import get_contact_id
+from Accounts.tasks import send_feedback
+
+def override_request(request):
+    data = request.data
+    data['author_id'] = request.user.id
+    return data
 
 class ProfileView(APIView):
 
     permission_classes = [IsAuthenticated, ]
 
     def get(self, request, format=None):
-        helper = UserTypeHelper(request, path=True)
+        helper = UserTypeHelper(request, path=False)
         try:
             data = helper.get_specific_user_by_id()
             serializer = helper.user_serializer(data)
@@ -30,7 +37,7 @@ class ProfileView(APIView):
             return Response({'message': 'User not found'}, status=status.HTTP_401_UNAUTHORIZED)
 
     def post(self, request, format=None):
-        helper = UserTypeHelper(request, path=False)
+        helper = UserTypeHelper(request, path=True)
         data = request.data
         data[helper.get_user_account_id()] = request.user.id
         if helper.user_type_exists():
@@ -42,7 +49,10 @@ class ProfileView(APIView):
 
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            message=serializer.data
+            message.update(get_contact_id(user_id=request.user.id, type='signup'))
+            # return Response(serializer.data)
+            return Response(message)
         return Response(data={'message': 'Invalid data entered'}, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, format=None):
@@ -62,7 +72,10 @@ class ProfileView(APIView):
 
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            message=serializer.data
+            message.update(get_contact_id(user_id=request.user.id))
+            # return Response(serializer.data)
+            return Response(message)
         return Response({'message': 'Invalid data entered'}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -111,3 +124,29 @@ class RelatedPeopleProfile(APIView):
 
         return Response({'message':'testing'})
 # ----------------------------------------------------------------------------------------------------------------------------------
+
+class Feedback(generics.CreateAPIView):
+    serializer_class = FeedbackSerializer
+    permission_classes = [IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        # call custom function here
+        try:
+            # helper = UserTypeHelper(request, path=False)
+            # username = helper.get_specific_username
+            # print(username)
+            send_feedback(serializer.data)
+        except:
+            print('error')
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create(self, serializer):
+        serializer.save()
+
+    def post(self, request, *args, **kwargs):
+        override_request(request)
+        return self.create(request, *args, **kwargs)

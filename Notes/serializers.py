@@ -1,9 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 
-from Faculty.models import Faculty
-from Student.models import Student
-from Accounts.models import UserAccount
-
+from Forum.serializers import AuthorSerializer
 from .models import BookmarkNotes, Note, File
 class FileSerializer(ModelSerializer):
     class Meta:
@@ -44,8 +41,27 @@ class BookmarkNotesSerializer(ModelSerializer):
 
 class NoteGenericSerializer(ModelSerializer):
     note_file = FileSerializer(many=True)
-    
+    author_id = AuthorSerializer()
+
     class Meta:
         model = Note
-        fields = ['id', 'title', 'description', 'uploaded', 'author_id', 'note_file']
+        fields = ['id', 'title', 'description', 'uploaded', 'author_id', 'file_obj_firebase', 'note_file']
+    
+    def to_representation(self, instance):
+        data = super(NoteGenericSerializer, self).to_representation(instance)
+        note_id = data['id']
+        request=self.context.get("request")
+        user = request.user.id
+
+        obj=BookmarkNotes.objects.filter(user_id=user).filter(note_id=note_id)
+        if obj:
+            # bookmarked  by current user
+            data['bookmarked_by_user'] = 'True'
+        else:
+            # not bookmarked by current answer
+            data['bookmarked_by_user'] = 'False'
+
+        return data
+
+
     

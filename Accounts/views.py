@@ -26,9 +26,11 @@ from datetime import timedelta
 from Profile.UserHelpers import UserTypeHelperByID
 
 from .tasks import send_otp
+from Project_TwoWaits.settings import OTP_EXPIRE_DURATION
 # # ------OTP-------
-otp_expire_duration = 2
+otp_expire_duration = OTP_EXPIRE_DURATION
 
+from Chat.models import Contact
 
 # # -------CHANGE TO CLASS BASED--------
 # # ------ For Sending OTP to passed E-Mail -------
@@ -55,6 +57,19 @@ otp_expire_duration = 2
 #     msg.send()
 # #------------------------------------------------
 
+def get_contact_id(user_id=None,user=None,type='login'):
+    try:
+        if user_id:
+            user = UserAccount.objects.get(id=user_id)
+        if type=='login':
+            c = Contact.objects.get(user=user)
+            return {'contact_id': c.id}
+        elif type=='signup':
+            c = Contact.objects.create(user=user)
+            return {'contact_id': c.id}
+    except:
+        return {'None':'Null'}
+
 class NewAccount(APIView):
     permission_classes = (AllowAny,)
     
@@ -78,7 +93,12 @@ class NewAccount(APIView):
                 if serializer.is_valid():
                     # send_otp(user_email)
                     serializer.save()
-                return Response(serializer.data)
+                    message=serializer.data
+                    # try:
+                    #     message.update(get_contact_id(user_id=request.user.id, type='signup'))
+                    # except:
+                    #     pass
+                    return Response(message, status=status.HTTP_200_OK)
             except:
                 message = 'Please Enter a valid password. Password should have atleast 1 Capital Letter, 1 Number and 1 Special Character in it. Also it should not contain 123'
                 return Response({'message': message},status=status.HTTP_400_BAD_REQUEST)
@@ -102,7 +122,14 @@ class LoginAccount(APIView):
                 else:
                     message = {'message':'Login verified'}
                     # for user type declaration
-                    message.update(UserTypeHelperByID(entered_usr))
+                    try:
+                        message.update(UserTypeHelperByID(entered_usr))
+                    except:
+                        pass
+                    try:
+                        message.update(get_contact_id(user=entered_usr, type='login'))
+                    except:
+                        pass
                     return Response(message, status=status.HTTP_202_ACCEPTED)
             else:
                 message = {'message':'Incorrect password'}
@@ -192,6 +219,47 @@ class ForgotResetPassword(APIView):
         except:
             message = {'message':'User not found'}
             return Response(message, status=status.HTTP_401_UNAUTHORIZED)
+
+class ChangePassword(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        old_password = request.data.get("old_password")
+        new_password = request.data.get("new_password")
+        if old_password != new_password:
+            try:
+                user = UserAccount.objects.get(id=request.user.id)
+                if user.is_verified:
+                    if check_password(old_password, user.password):
+                        # Crrect old password
+                        print("old password matched")
+                        try:
+                            validate_password(new_password)
+                            try:
+                                user.password = make_password(new_password)
+                                user.save()
+                                message = {'message':'Password Changed Successfully'}
+                                return Response(message, status=status.HTTP_202_ACCEPTED)
+                            except:
+                                message = {'message':'Password could not be changed'}
+                                return Response(message, status=status.HTTP_406_NOT_ACCEPTABLE)
+                        except:
+                            message = 'Please Enter a valid password. Password should have atleast 1 Capital Letter, 1 Number and 1 Special Character in it. Also it should not contain 123'
+                            return Response({'message': message},status=status.HTTP_400_BAD_REQUEST)
+                    else:
+                        # incorrect old password
+                        message = 'Invalid old password'
+                        return Response({'message': message},status=status.HTTP_405_METHOD_NOT_ALLOWED)
+                else:
+                    message = {'message':'User not verified (OTP verification required)'}
+                    return Response(message, status=status.HTTP_403_FORBIDDEN) 
+            except:
+                message = {'message':'User not found'}
+                return Response(message, status=status.HTTP_401_UNAUTHORIZED)
+        else:
+            message = {'message':'New Password can\'t be same as old password'}
+            return Response(message, status=status.HTTP_409_CONFLICT)
+
 
 class RenterEmail(APIView):
     permission_classes = (AllowAny,)
