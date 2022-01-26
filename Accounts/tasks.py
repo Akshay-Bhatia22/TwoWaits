@@ -8,8 +8,9 @@ from django.utils import timezone
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
 
-# ------OTP-------
-otp_expire_duration = 2
+from Project_TwoWaits.settings import OTP_EXPIRE_DURATION
+# # ------OTP-------
+otp_expire_duration = OTP_EXPIRE_DURATION
 
 # -------CHANGE TO CLASS BASED--------
 # ------ For Sending OTP to passed E-Mail -------

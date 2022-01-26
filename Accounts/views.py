@@ -26,8 +26,9 @@ from datetime import timedelta
 from Profile.UserHelpers import UserTypeHelperByID
 
 from .tasks import send_otp
+from Project_TwoWaits.settings import OTP_EXPIRE_DURATION
 # # ------OTP-------
-otp_expire_duration = 2
+otp_expire_duration = OTP_EXPIRE_DURATION
 
 from Chat.models import Contact
 
