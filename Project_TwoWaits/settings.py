@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'Forum',
     'Quiz',
     'Notes',
+    'Lecture',
     'Quiz_results',
     'Chat',
 
@@ -219,7 +220,7 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS=True
-OTP_EXPIRE_DURATION = env('OTP_EXPIRE_DURATION')
+OTP_EXPIRE_DURATION = int(env('OTP_EXPIRE_DURATION'))
 
 
 AUTH_USER_MODEL = 'Accounts.UserAccount'
