@@ -9,7 +9,7 @@ from Quiz.models import Quiz, Option, QuizQuestion
 from Quiz_results.models import QuizResult, StudentAnswer, StudentResponse
 
 # ---------Serializers--------
-from .serializers import QuizResultSerializer, QuizStudentDataSerializer
+from .serializers import QuizResultSerializer, QuizStudentDataSerializer, FullQuizResultSerializer
 from Profile.UserHelpers import UserTypeHelper
 # from .models import 
 
@@ -97,3 +97,10 @@ class GenerateResult(APIView):
         data = request.data
         response = generate_result(data['quiz_id'], request.user.id)
         return response
+
+class CompleteResultView(generics.RetrieveAPIView):
+    serializer_class = FullQuizResultSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Quiz.objects.all()
