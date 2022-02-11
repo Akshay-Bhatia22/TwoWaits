@@ -9,6 +9,14 @@ class LectureSerializer(ModelSerializer):
         model = Lecture
         fields = ['id', 'title', 'description', 'uploaded', 'author_id', 'video_firebase']
 
+class LectureWishlistSerializer(ModelSerializer):
+    author_id = AuthorSerializer()
+
+    class Meta:
+        model = Lecture
+        fields = ['id', 'title', 'description', 'uploaded', 'author_id', 'video_firebase']
+
+
 class LectureGenericSerializer(ModelSerializer):
     author_id = AuthorSerializer()
 

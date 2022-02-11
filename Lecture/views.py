@@ -5,7 +5,7 @@ from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from .models import Lecture, Wishlist
-from .serializers import LectureSerializer, LectureGenericSerializer, WishlistSerializer
+from .serializers import LectureSerializer, LectureWishlistSerializer, LectureGenericSerializer, WishlistSerializer
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -77,7 +77,7 @@ class WishlistAdd(APIView):
 
 
 class YourWishlist(generics.ListAPIView):
-    serializer_class = LectureSerializer
+    serializer_class = LectureWishlistSerializer
     permission_classes = [IsAuthenticated]
     def get_queryset(self):
         queryset = Lecture.objects.filter(wishlist_lecture_id__user_id=self.request.user.id)
